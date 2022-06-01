@@ -5,126 +5,118 @@ using Photon.Pun;
 using UnityEngine.UI;
 using Photon.Realtime;
 using TMPro;
-public class playerhealth : MonoBehaviourPunCallbacks,IPunObservable
+public class PlayerHealth : MonoBehaviourPunCallbacks
 {
-    public AudioSource AudioSource;
+    PlayerCtrl playerCtrl;
+    Animator anim;
     public int healthcount;
-    bool hurt1, addhealth1,inbubble;
     public bool hurtopen;
-    public Animator anim;
-    Animator lifeanim;
-    GameObject deadmenu;
-    int player1234;
-    public static int life1,life2,life3,life4;
+    public bool inbubble;
     public Collider ishurt;
-    Vector3 currPos = Vector3.zero;
-    Vector3 currScale = Vector3.zero;
-    Quaternion currRot = Quaternion.identity;
-    // Start is called before the first frame update
-    private void Awake()
-    {
-        //设置传送数据类型 (同步属性)
-        GetComponent<PhotonView>().Synchronization = ViewSynchronization.UnreliableOnChange;
-        // 将photonView的observe属性设置为这个脚本
-        //GetComponent<PhotonView>().ObservedComponents[0] = this;
-        //设置player位置的初始值
-        
-        currPos = transform.position;
-        currScale = transform.localScale;
-        currRot = transform.rotation;
-
-    }
+    public GameObject addHealth;
     void Start()
     {
-        
+        playerCtrl = GetComponent<PlayerCtrl>();
+        anim = GetComponent<Animator>();
         healthcount = 100;
         hurtopen = true;
-        hurt1 = false;
-        addhealth1 = false;
-        life1 = 100;
-        life2 = 100;
-        life3 = 100;
-        life4 = 100;
-        player1234 = RoomManager.localPlayerPos;
-        deadmenu = GameObject.Find("deadmenu");
+        inbubble = false;
     }
-    // Update is called once per frame
-    void Update()
+    /// <summary>
+    /// 更新血量UI
+    /// </summary>
+    /// <param name="playerPos"></param>
+    /// <param name="health"></param>
+    [PunRPC]
+    private void UdpateHealth(int playerPos, int health)
     {
-        if (photonView.IsMine == false && PhotonNetwork.IsConnected == true)
-        {
-            return;
-        }
-        healthcount = Mathf.Clamp(healthcount, 0, 100);
+        GameObject healthUI = GameObject.Find("P" + (playerPos).ToString() + "Name").transform.GetChild(1).gameObject;
+        healthUI.GetComponent<TMP_Text>().text = health.ToString();
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        players[playerPos - 1].GetComponent<PlayerHealth>().healthcount = health;
 
-        life1 = Mathf.Clamp(life1, 0, 100);
-        life2 = Mathf.Clamp(life2, 0, 100);
-        life3 = Mathf.Clamp(life3, 0, 100);
-        life4 = Mathf.Clamp(life4, 0, 100);
-
-        if (player1234 == 1)
-        {
-            dead();
-        }
-        if (player1234 == 2)
-        {
-            dead();
-        }
-        if (player1234 == 3)
-        {
-            dead();
-        }
-        if (player1234 == 4)
-        {
-            dead();
-        }
-
+        CheckDead();
     }
-    public void dead()
+    private void CheckDead()
     {
         if (healthcount <= 0)
         {
-            deadmenu.GetComponent<Animator>().SetTrigger("dead");
-            FindObjectOfType<player>().deadsource();
-           
+            playerCtrl.PlaySoundEffect(State.dead);
+            playerCtrl.GetComponent<Animator>().SetTrigger("dead");
             if (transform.position.x > 0)
             {
-                this.gameObject.GetComponent<Collider>().attachedRigidbody.AddForce(100000 * Time.deltaTime, 100000 * Time.deltaTime, 0);
+                this.gameObject.GetComponent<Rigidbody>().AddForce(100000 * Time.deltaTime, 100000 * Time.deltaTime, 0);
             }
             else
             {
-                this.gameObject.GetComponent<Collider>().attachedRigidbody.AddForce(-100000 * Time.deltaTime, 100000 * Time.deltaTime, 0);
+                this.gameObject.GetComponent<Rigidbody>().AddForce(-100000 * Time.deltaTime, 100000 * Time.deltaTime, 0);
             }
+            if (photonView.IsMine)
+            {
+                GameManager.instance.GameOver();
+                PhotonNetwork.Destroy(this.gameObject);
+            }
+
         }
     }
-    
-    public void ishurt1()
+    /// <summary>
+    /// 吃到道具補血
+    /// </summary>
+    private void AddHealth()
     {
-        ishurt.enabled = true;
+        addHealth.SetActive(true);
+        healthcount += 20;
+        healthcount = Mathf.Clamp(healthcount, 0, 100);
+        photonView.RPC("UdpateHealth", RpcTarget.All, RoomManager.localPlayerPos, healthcount);
+        Invoke("ResetAddHealth", 2);
     }
-    public void ishurt2()
+    private void ResetAddHealth()
     {
-        ishurt.enabled = false;
+        addHealth.SetActive(false);
     }
-    public void hurt()
+    /// <summary>
+    /// 受傷
+    /// </summary>
+    private void Hurted()
     {
         if (hurtopen == true)
         {
-            AudioSource.Play();
-            hurt1 = true;
-            ishurt.enabled = false;
-            anim.SetBool("hurt", hurt1);
+            Invincible();
+            playerCtrl.PlaySoundEffect(State.hurt);
+            playerCtrl.AnimPlay(State.hurt);
             healthcount -= 20;
-            anim.SetInteger("health", healthcount);
-            //lifeanim.SetInteger("life", healthcount);
-            hurtopen = false;
+            healthcount = Mathf.Clamp(healthcount, 0, 100);
+        }
+        photonView.RPC("UdpateHealth", RpcTarget.All, RoomManager.localPlayerPos, healthcount);
+    }
+    /// <summary>
+    /// 無敵
+    /// </summary>
+    private void Invincible()
+    {
+        ishurt.enabled = false;
+        hurtopen = false;
+    }
+    /// <summary>
+    /// 重置狀態
+    /// </summary>
+    public void ResetHurt()
+    {
+        anim.SetBool("hurt", false);
+        if (inbubble == false)//沒有吃到道具無敵
+        {
+            ishurt.enabled = true;
+            hurtopen = true;
+        }
+        else//有吃到道具，延長無敵時間
+        {
+            Invoke("InBubbleOver", 5);
         }
     }
-    public void rehurt()
+    public void InBubbleOver()
     {
-        hurt1 = false;
+        inbubble = false;
         ishurt.enabled = true;
-        anim.SetBool("hurt", hurt1);
         hurtopen = true;
     }
     public void OnTriggerEnter(Collider other)
@@ -133,67 +125,49 @@ public class playerhealth : MonoBehaviourPunCallbacks,IPunObservable
         {
             return;
         }
-
         if (other.gameObject.tag == "deadzone")
-        {
             healthcount = 0;
-            anim.SetInteger("health", healthcount);
-        }
-        if (other.gameObject.tag == "thunder")
+        if (other.gameObject.tag == "addhealth")
         {
-            if (inbubble == false)
-            {
-                if (other.gameObject.GetComponent<PhotonView>().IsMine == false)
+            AddHealth();
+        }
+        if (hurtopen == false)
+            return;
+        switch (other.gameObject.tag)
+        {
+            case "thunder":
+                if (other.transform.parent.GetComponent<PhotonView>().IsMine == false)
                 {
-                    hurt();
+                    Hurted();
                 }
-            }
-        }
-        if (other.gameObject.tag == "bomb")
-        {
-            if (inbubble == false)
-            {
+                break;
+            case "bomb":
                 if (transform.position.y > other.transform.position.y)
                 {
                     this.gameObject.GetComponent<Collider>().attachedRigidbody.AddForce(0, 100000 * Time.deltaTime, 0);
-                    hurt();
+                    Hurted();
                 }
-            }
-        }
-        if (other.gameObject.transform.position.y > this.gameObject.transform.position.y && other.gameObject.tag == "Player")
-        {
-            if (inbubble == false)
-            {
-                hurt();
-            }
-        }
-        if (other.gameObject.tag == "addhealth")
-        {
-            addhealth1 = true;
-            anim.SetBool("addhealth", addhealth1);
-            healthcount += 20;
-            anim.SetInteger("health", healthcount);
-            //lifeanim.SetInteger("life", healthcount);
-        }
-        if (other.gameObject.tag == "headtab")
-        {
-            if (inbubble == false)
-            {
+                break;
+            case "Player":
+                if (other.transform.position.y > this.transform.position.y)
+                {
+                    Hurted();
+                }
+                break;
+            case "headtab":
                 if (this.transform.position.y > other.transform.position.y)
                 {
-                    hurt();
+                    Hurted();
                 }
-            }
-        }
-        if (other.gameObject.tag == "gtskill")
-        {
-            if (inbubble == false)
-            {
+                break;
+            case "gtskill":
                 if (other.gameObject.GetComponent<PhotonView>().IsMine == false)
                 {
-                    hurt();
+                    Hurted();
                 }
-            }
+                break;
+            default:
+                break;
         }
     }
     private void OnCollisionEnter(Collision collision)
@@ -202,78 +176,26 @@ public class playerhealth : MonoBehaviourPunCallbacks,IPunObservable
         {
             return;
         }
-     
-        if (collision.gameObject.tag == "soliskill")
-        {
-            if (inbubble == false)
-            {
-                if (collision.gameObject.GetComponent<PhotonView>().IsMine == false)
-                {
-                    hurt();
-                }
-            }
-        }
-        if (collision.gameObject.tag == "njskill")
-        {
-            if (inbubble == false)
-            {
-                if (collision.gameObject.GetComponent<PhotonView>().IsMine == false)
-                {
-                    hurt();
-                }
-            }
-        }
-        if (collision.gameObject.tag == "bubble")
+        if (collision.gameObject.tag == "bubble" || collision.gameObject.tag == "headtab")
         {
             inbubble = true;
-            Invoke("outbubble", 5f);
+            Invincible();
+            Invoke("ResetHurt", 5f);
+        }
+        if (collision.gameObject.tag == "soliskill" || collision.gameObject.tag == "njskill")
+        {
+            if (collision.gameObject.GetComponent<PhotonView>().IsMine == false)
+            {
+                Hurted();
+            }
         }
     }
-    public void outbubble()
-    {
-        inbubble = false;
-    }
-    public void health()
-    {
-        addhealth1 = false;
-        anim.SetBool("addhealth", addhealth1);
-    }
-    public void nohurt()
-    {
-        anim.SetBool("nohurt", false);
-    }
-    public void slowskill()
+    public void SlowTime()
     {
         Time.timeScale = 0.3f;
     }
-    public void respeedskill()
+    public void ResetTime()
     {
         Time.timeScale = 1f;
-    }
-    public void de()
-    {
-        PhotonNetwork.Destroy(this.gameObject);
-    }
-    void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        //传送本地玩家的位置（和旋转等）信息
-        if (stream.IsWriting)
-        {
-            stream.SendNext(healthcount);
-            stream.SendNext(hurt1);
-            stream.SendNext(addhealth1);
-            stream.SendNext(transform.position);
-            stream.SendNext(transform.localScale);
-            stream.SendNext(transform.rotation);
-        }
-        else//接收远程玩家的位置信息
-        {
-            healthcount = (int)stream.ReceiveNext();
-            hurt1 = (bool)stream.ReceiveNext();
-            addhealth1 = (bool)stream.ReceiveNext();
-            currPos = (Vector3)stream.ReceiveNext();
-            currScale = (Vector3)stream.ReceiveNext();
-            currRot = (Quaternion)stream.ReceiveNext();
-        }
     }
 }

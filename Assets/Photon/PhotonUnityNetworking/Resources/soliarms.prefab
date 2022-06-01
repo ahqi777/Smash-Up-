@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -8189602595362328927}
   - component: {fileID: 1628835953058195560}
   - component: {fileID: 3889815876771957346}
-  - component: {fileID: 8032991532589850052}
+  - component: {fileID: 6541543321343229234}
   m_Layer: 0
   m_Name: soliarms
   m_TagString: soliskill
@@ -56,7 +56,6 @@ MonoBehaviour:
   OwnershipTransfer: 0
   ObservedComponents:
   - {fileID: -8189602595362328927}
-  - {fileID: 8032991532589850052}
   viewIdField: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -105,7 +104,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 56
   m_CollisionDetection: 0
---- !u!114 &8032991532589850052
+--- !u!114 &6541543321343229234
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

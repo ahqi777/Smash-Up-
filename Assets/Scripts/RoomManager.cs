@@ -11,7 +11,7 @@ using TMPro;
 public class RoomManager : MonoBehaviourPunCallbacks
 {
     public static int roleIndex;
-    public static int localPlayerPos, xposition;
+    public static int localPlayerPos;
 
     public Sprite[] rolePrites;
     public Sprite[] Btnsprites;
@@ -19,7 +19,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public GameObject gameStart;
     public GameObject hint1, hint2;
     private Dictionary<int, string[]> playerRoomInfos;//Master儲存房間所有玩家資訊
-    private string[] localPlayerInfo = { "", "", "", ""};//本地玩家資訊
+    public string[] localPlayerInfo = { "", "", "", ""};//本地玩家資訊
     private int isReady;
     private bool isready;
     /// <summary>
