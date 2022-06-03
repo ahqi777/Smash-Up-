@@ -30,7 +30,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         PhotonNetwork.AutomaticallySyncScene = false;
         int xposition = 0;
         GameObject player;
-        Debug.Log(RoomManager.localPlayerPos);
         switch (RoomManager.localPlayerPos)
         {
             case 1:

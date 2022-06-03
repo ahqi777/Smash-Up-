@@ -49,10 +49,6 @@ public class ScenesManager : MonoBehaviourPunCallbacks
     }
     public void LeaveRoom()
     {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            PhotonNetwork.CurrentRoom.RemovedFromList = true;
-        }
         if (PhotonNetwork.InRoom)
             PhotonNetwork.LeaveRoom();
         SceneManager.LoadScene("Lobby");

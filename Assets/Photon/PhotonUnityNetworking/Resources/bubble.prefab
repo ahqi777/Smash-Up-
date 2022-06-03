@@ -12,13 +12,14 @@ GameObject:
   - component: {fileID: 3052397721483820093}
   - component: {fileID: 3052397721483820092}
   - component: {fileID: 4049563829031910710}
-  - component: {fileID: 3052397721483820082}
   - component: {fileID: 3052397721483820081}
+  - component: {fileID: 3052397721483820082}
   - component: {fileID: 3052397721483820080}
-  - component: {fileID: 3052397721483820087}
+  - component: {fileID: 3898708500366151660}
   - component: {fileID: 8320135404404382959}
+  - component: {fileID: -8304894368087550817}
   m_Layer: 0
-  m_Name: bubble
+  m_Name: Bubble
   m_TagString: bubble
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -98,21 +99,6 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.49999997
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &3052397721483820082
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3052397721483820086}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b36ed5ec60470604aa1ba982c9c9e809, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AudioSource: {fileID: 8320135404404382959}
-  currttime: 0
-  coll: {fileID: 4049563829031910710}
 --- !u!54 &3052397721483820081
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -129,6 +115,21 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 120
   m_CollisionDetection: 0
+--- !u!114 &3052397721483820082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3052397721483820086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b36ed5ec60470604aa1ba982c9c9e809, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 8320135404404382959}
+  coll: {fileID: 4049563829031910710}
+  lifeTime: 8
 --- !u!114 &3052397721483820080
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,14 +147,14 @@ MonoBehaviour:
   prefixField: -1
   observableSearch: 2
   Synchronization: 3
-  OwnershipTransfer: 0
+  OwnershipTransfer: 1
   ObservedComponents:
-  - {fileID: 3052397721483820082}
-  - {fileID: 3052397721483820087}
+  - {fileID: 3898708500366151660}
+  - {fileID: -8304894368087550817}
   viewIdField: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &3052397721483820087
+--- !u!114 &3898708500366151660
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -162,13 +163,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 3052397721483820086}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Script: {fileID: 11500000, guid: 64179f3720bbfe947b7724caa67b7c1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 1
-  m_SynchronizeScale: 0
-  m_UseLocal: 1
+  m_SynchronizeVelocity: 1
+  m_SynchronizeAngularVelocity: 0
+  m_TeleportEnabled: 0
+  m_TeleportIfDistanceGreaterThan: 3
 --- !u!82 &8320135404404382959
 AudioSource:
   m_ObjectHideFlags: 0
@@ -265,3 +266,36 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &-8304894368087550817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3052397721483820086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8efc6b1d64977384eb3405357896c656, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PositionModel:
+    SynchronizeEnabled: 1
+    TeleportEnabled: 1
+    TeleportIfDistanceGreaterThan: 3
+    InterpolateOption: 2
+    InterpolateMoveTowardsSpeed: 1
+    InterpolateLerpSpeed: 5
+    ExtrapolateOption: 0
+    ExtrapolateSpeed: 1
+    ExtrapolateIncludingRoundTripTime: 1
+    ExtrapolateNumberOfStoredPositions: 1
+  m_RotationModel:
+    SynchronizeEnabled: 0
+    InterpolateOption: 1
+    InterpolateRotateTowardsSpeed: 180
+    InterpolateLerpSpeed: 5
+  m_ScaleModel:
+    SynchronizeEnabled: 1
+    InterpolateOption: 0
+    InterpolateMoveTowardsSpeed: 1
+    InterpolateLerpSpeed: 0

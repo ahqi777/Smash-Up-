@@ -1,0 +1,42 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using Photon.Pun;
+public class Props : MonoBehaviourPun
+{
+    public AudioSource audioSource;
+    public Collider coll;
+    public int lifeTime;
+    public virtual void Start()
+    {
+        StartCoroutine(Photon_Destroy(lifeTime));
+    }
+    /// <summary>
+    /// 道具存在時間
+    /// </summary>
+    /// <param name="life"></param>
+    /// <returns></returns>
+    public virtual IEnumerator Photon_Destroy(int life)
+    {
+        int i = 0;
+        while (i < life)
+        {
+            yield return new WaitForSeconds(1f);
+            i++;
+        }
+        if (PhotonNetwork.IsMasterClient)
+            PhotonNetwork.Destroy(this.gameObject);
+    }
+    public IEnumerator InPropsOver(int life, PlayerHealth playerHealth)
+    {
+        int i = 0;
+        while (i < life)
+        {
+            yield return new WaitForSeconds(1);
+            i++;
+        }
+        playerHealth.InBubbleOver();
+        if (PhotonNetwork.IsMasterClient)
+            PhotonNetwork.Destroy(this.gameObject);
+    }
+}
