@@ -27,6 +27,12 @@ public class Props : MonoBehaviourPun
         if (PhotonNetwork.IsMasterClient)
             PhotonNetwork.Destroy(this.gameObject);
     }
+    /// <summary>
+    /// 道具使用時間
+    /// </summary>
+    /// <param name="life">持續時間</param>
+    /// <param name="playerHealth"></param>
+    /// <returns></returns>
     public IEnumerator InPropsOver(int life, PlayerHealth playerHealth)
     {
         int i = 0;

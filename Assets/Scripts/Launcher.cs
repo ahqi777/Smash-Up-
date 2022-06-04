@@ -72,6 +72,9 @@ public class Launcher : MonoBehaviourPunCallbacks
             PhotonNetwork.JoinLobby();
         Debug.Log("Enter Lobby");
     }
+    /// <summary>
+    /// 名字確定按鈕
+    /// </summary>
     public void Nextbutton()
     {
         if (playerName.text.Length < 2)
@@ -84,6 +87,9 @@ public class Launcher : MonoBehaviourPunCallbacks
         roomUI.SetActive(true);
         roomlistUI.SetActive(true);
     }
+    /// <summary>
+    /// 創建房間按鈕
+    /// </summary>
     public void Roombutton()
     {
         if (roomName.text.Length < 2)
@@ -97,6 +103,9 @@ public class Launcher : MonoBehaviourPunCallbacks
         }
         CreateRoom();
     }
+    /// <summary>
+    /// 創建房間
+    /// </summary>
     void CreateRoom()
     {
         RoomOptions options = new RoomOptions { PublishUserId = true, MaxPlayers = 4 };

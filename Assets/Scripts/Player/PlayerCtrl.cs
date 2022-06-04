@@ -33,9 +33,12 @@ public class PlayerCtrl : MonoBehaviourPun
     Vector3 moveAmount;
     Vector3 smoothMoveVelocity;
     float smoothTime = 0.15f;
+    /// <summary>
+    /// 初始化
+    /// </summary>
     void Start()
     {
-        photonView.RPC("SkillCooling", RpcTarget.All, photonView.Owner);
+        photonView.RPC("SkillCooling", RpcTarget.All, photonView.Owner);//技能CD開始計算
         rb = GetComponent<Rigidbody>();
         if (!photonView.IsMine)
             Destroy(rb);
@@ -52,6 +55,9 @@ public class PlayerCtrl : MonoBehaviourPun
 
         }
     }
+    /// <summary>
+    /// 移動
+    /// </summary>
     private void FixedUpdate()
     {
         if (isGameStart && photonView.IsMine)
@@ -68,11 +74,16 @@ public class PlayerCtrl : MonoBehaviourPun
         WarriorAttack();
         GuitaristAttack();
     }
+    /// <summary>
+    /// 輸入移動
+    /// </summary>
     public void Move()
     {
         Vector3 moveDir = new Vector3(-Input.GetAxisRaw("Horizontal"), 0, 0).normalized;
         moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * speed, ref smoothMoveVelocity, smoothTime);
-    }
+    }/// <summary>
+    /// 狂戰士技能攻擊
+    /// </summary>
     public void WarriorAttack()
     {
         if (this.gameObject.name != "Warrior(Clone)")
@@ -107,6 +118,9 @@ public class PlayerCtrl : MonoBehaviourPun
             }
         }
     }
+    /// <summary>
+    /// 吉他手技能攻擊
+    /// </summary>
     public void GuitaristAttack()
     {
         if (this.gameObject.name != "Guitarist(Clone)")
@@ -125,12 +139,12 @@ public class PlayerCtrl : MonoBehaviourPun
         {
             return;
         }
-        if (other.gameObject.tag == "addspeed")
+        if (other.gameObject.tag == "addspeed")//踩到加速器
         {
             speed = 6;
             Invoke("SpeedBack", 3f);
         }
-        if (other.gameObject.tag == "banana")
+        if (other.gameObject.tag == "banana")//踩到香蕉
         {
             if (this.transform.position.y > other.transform.position.y)
             {
@@ -150,7 +164,7 @@ public class PlayerCtrl : MonoBehaviourPun
         {
             return;
         }
-        if (collision.gameObject.tag == "plane")
+        if (collision.gameObject.tag == "plane")//踩到地板，跳起來
         {
             PlaySoundEffect(State.jump);
             AnimPlay(State.jump);
@@ -172,6 +186,9 @@ public class PlayerCtrl : MonoBehaviourPun
     {
         speed = 3;
     }
+    /// <summary>
+    /// 偵測有無施放技能
+    /// </summary>
     public void Skill()
     {
         if (SkillIsReady == true && Input.GetKeyDown(KeyCode.J))
@@ -179,6 +196,9 @@ public class PlayerCtrl : MonoBehaviourPun
             AnimPlay(State.skill);
         }
     }
+    /// <summary>
+    /// 吉他手技能，跟隨自己
+    /// </summary>
     public void GuitaristSkill()
     {
         if (this.photonView.IsMine)
@@ -252,7 +272,7 @@ public class PlayerCtrl : MonoBehaviourPun
         sound_effect.Play();
     }
     /// <summary>
-    /// 技能CD中
+    /// 計算技能CD
     /// </summary>
     /// <param name="cd"></param>
     /// <returns></returns>
@@ -286,10 +306,17 @@ public class PlayerCtrl : MonoBehaviourPun
         }
         SkillIsReady = true;
     }
+    /// <summary>
+    /// 開始計算技能CD
+    /// </summary>
     public void StartCooling()
     {
-        StartCoroutine(SkillCooling(skillCD, this.gameObject.name));//開始計算技能CD
+        StartCoroutine(SkillCooling(skillCD, this.gameObject.name));
     }
+    /// <summary>
+    /// 傳訊息給所有人計算自己的技能CD
+    /// </summary>
+    /// <param name="owner"></param>
     [PunRPC]
     public void SkillCooling(Player owner)
     {

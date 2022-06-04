@@ -41,6 +41,9 @@ public class PlayerHealth : MonoBehaviourPunCallbacks
         }
         CheckDead();
     }
+    /// <summary>
+    /// 確認死亡
+    /// </summary>
     private void CheckDead()
     {
         if (healthcount <= 0)
@@ -106,6 +109,9 @@ public class PlayerHealth : MonoBehaviourPunCallbacks
             hurtopen = true;
         }
     }
+    /// <summary>
+    /// 道具結束
+    /// </summary>
     public void InBubbleOver()
     {
         inbubble = false;
@@ -118,7 +124,7 @@ public class PlayerHealth : MonoBehaviourPunCallbacks
         {
             return;
         }
-        if (other.gameObject.tag == "deadzone")
+        if (other.gameObject.tag == "deadzone")//直接死亡
         {
             healthcount = 0;
             photonView.RPC("UpdateHealth", RpcTarget.All, RoomManager.localPlayerPos, healthcount, photonView.Owner);
@@ -192,6 +198,7 @@ public class PlayerHealth : MonoBehaviourPunCallbacks
             }
         }
     }
+
     public void SlowTime()
     {
         Time.timeScale = 0.3f;
