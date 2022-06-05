@@ -28,21 +28,21 @@ public class GameManager : MonoBehaviourPunCallbacks
         PhotonNetwork.CurrentRoom.RemovedFromList = true;
         Destroy(GameObject.Find("BGmusic"));
         PhotonNetwork.AutomaticallySyncScene = false;
-        int xposition = 0;
+        float xposition = 0;
         GameObject player;
         switch (RoomManager.localPlayerPos)
         {
             case 1:
-                xposition = -10;
+                xposition = -11;
                 break;
             case 2:
-                xposition = -4;
+                xposition = -2.5f;
                 break;
             case 3:
-                xposition = 2;
+                xposition = 2.5f;
                 break;
             case 4:
-                xposition = 8;
+                xposition = 11;
                 break;
         }
         Vector3 startPos = new Vector3(xposition, 10f, 0);
