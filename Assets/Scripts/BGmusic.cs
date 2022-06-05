@@ -8,21 +8,14 @@ using TMPro;
 
 public class BGmusic : MonoBehaviourPun
 {
-    //public AudioSource audioSource;
-    // Start is called before the first frame update
+    public GameObject bgm;
     void Start()
     {
         Time.timeScale = 1;
-        DontDestroyOnLoad(this.gameObject);
+        if (!GameObject.Find(bgm.name+"(Clone)"))
+        {
+            GameObject temp = Instantiate(bgm, transform.position, Quaternion.identity);
+            DontDestroyOnLoad(temp);
+        }
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-    /*public void clicksource()
-    {
-        audioSource.Play();
-    }*/
 }

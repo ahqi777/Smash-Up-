@@ -11,9 +11,9 @@ public class Teach : MonoBehaviour
     int index;
     private void Awake()
     {
-        if (GameObject.Find("BGmusic"))
+        if (GameObject.Find("BGM(Clone)"))
         {
-            Destroy(GameObject.Find("BGmusic"));
+            Destroy(GameObject.Find("BGM(Clone)"));
         }
     }
     // Start is called before the first frame update
